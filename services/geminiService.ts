@@ -2,6 +2,17 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { GeneratedContent, GeneratedImage } from "../types";
 
 /**
+ * Helper to safely get environment variable in browser context
+ */
+const getEnvApiKey = () => {
+  try {
+    return typeof process !== 'undefined' ? process.env.API_KEY : undefined;
+  } catch (e) {
+    return undefined;
+  }
+};
+
+/**
  * Generates the text content (Title, Caption, and Image Prompt) using Gemini Flash.
  */
 export const generateBlogContent = async (
@@ -10,8 +21,14 @@ export const generateBlogContent = async (
   apiKey?: string
 ): Promise<GeneratedContent> => {
   // Initialize client here to ensure we grab the latest API key if it changed
-  // Prioritize the manually provided key, fallback to the environment variable
-  const ai = new GoogleGenAI({ apiKey: apiKey || process.env.API_KEY });
+  // Prioritize the manually provided key, fallback to the environment variable (safely accessed)
+  const keyToUse = apiKey || getEnvApiKey();
+  
+  if (!keyToUse) {
+    throw new Error("API Key is missing. Please connect your Google AI key.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey: keyToUse });
   const model = "gemini-2.5-flash";
   
   const systemInstruction = `
@@ -74,7 +91,13 @@ export const generateBlogContent = async (
  */
 export const generateBlogImage = async (prompt: string, apiKey?: string): Promise<GeneratedImage> => {
   // Initialize client here to ensure we grab the latest API key if it changed
-  const ai = new GoogleGenAI({ apiKey: apiKey || process.env.API_KEY });
+  const keyToUse = apiKey || getEnvApiKey();
+
+  if (!keyToUse) {
+     throw new Error("API Key is missing. Please connect your Google AI key.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey: keyToUse });
   // Using Imagen 4.0 for high quality results as requested in prompt instructions
   const model = "imagen-4.0-generate-001";
 

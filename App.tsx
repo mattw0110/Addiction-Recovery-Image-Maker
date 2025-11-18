@@ -23,8 +23,9 @@ function App() {
           const hasKey = await window.aistudio.hasSelectedApiKey();
           setHasApiKey(hasKey);
         } else {
-          // Fallback for environments where the wrapper isn't present but env is set
-          setHasApiKey(!!process.env.API_KEY);
+          // Safe check for process.env to avoid "ReferenceError: process is not defined" in browser
+          const envKey = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
+          setHasApiKey(!!envKey);
         }
       } catch (e) {
         console.error("Error checking API key:", e);
