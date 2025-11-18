@@ -1,0 +1,5 @@
+{
+  "name": "Addiction Recovery Image Maker",
+  "description": "Generates uplifting, high-quality images and compassionate text for addiction recovery blog posts using Gemini and Imagen.",
+  "requestFramePermissions": []
+}
